@@ -1,0 +1,256 @@
+:root {
+  --milk: #f9e9e5;
+  --plum: #593b43;
+  --strawberry: #d57789;
+  --strawberry-deep: #c86a7c;
+  --cream: #ffffff;
+  --muted: #a2767e;
+
+  --serif: 'Instrument Serif', 'Noto Serif Display Variable', Georgia, serif;
+  --sans: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--milk);
+  color: var(--plum);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #f2c4cc;
+  color: var(--plum);
+}
+
+/* ——— Stage ——— */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* A little more room below than above, so the question sits on the optical centre. */
+  padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    calc(max(1.25rem, env(safe-area-inset-bottom)) + 7vh) max(1rem, env(safe-area-inset-left));
+  padding-bottom: calc(max(1.25rem, env(safe-area-inset-bottom)) + 7svh);
+  text-align: center;
+}
+
+.safe-area {
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  right: env(safe-area-inset-right, 0px);
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: env(safe-area-inset-left, 0px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ask,
+.answer {
+  grid-area: 1 / 1;
+}
+
+/* ——— Type ——— */
+
+.question,
+.answer {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 380;
+  font-stretch: 70%;
+  /* «на свидание?» is the longest unbreakable line (~5.4em); height caps it in a landscape phone. */
+  font-size: clamp(2.5rem, min((100vw - 3rem) / 5.8, 13vh), 7.25rem);
+  font-size: clamp(2.5rem, min((100vw - 3rem) / 5.8, 13svh), 7.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.question > * {
+  display: block;
+}
+
+.question em,
+.answer em {
+  font-style: italic;
+}
+
+.answer:focus {
+  outline: none;
+}
+
+.kiss {
+  display: inline-block;
+  font-size: 0.74em;
+  line-height: 1;
+  vertical-align: 0.06em;
+}
+
+/* ——— Buttons ——— */
+
+.choices {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: clamp(1.75rem, 6vh, 3.5rem);
+  margin-top: clamp(1.75rem, 6svh, 3.5rem);
+}
+
+.btn {
+  appearance: none;
+  margin: 0;
+  border: 0;
+  min-width: 6.25em;
+  height: 2.85em;
+  padding: 0 1.7em;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: clamp(1.1875rem, 0.75rem + 1vmin, 1.4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--muted);
+  outline-offset: 3px;
+}
+
+.btn-yes {
+  background: var(--strawberry);
+  color: var(--cream);
+  transition:
+    background-color 220ms ease,
+    transform 220ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .btn-yes:hover {
+    background: var(--strawberry-deep);
+  }
+}
+
+.btn-yes:active {
+  transform: scale(0.97);
+}
+
+.no-slot {
+  display: inline-flex;
+  margin-left: 0.75rem;
+  transition:
+    width 520ms var(--ease-out),
+    margin-left 520ms var(--ease-out);
+}
+
+.btn-no {
+  background: var(--cream);
+  color: var(--plum);
+  box-shadow: inset 0 0 0 1px rgb(162 118 126 / 0.22);
+  touch-action: none;
+}
+
+/* Once it has run away, «Нет» is positioned by script (transform) against the viewport. */
+.btn-no[data-free] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+/* ——— Motion ——— */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--rise);
+  }
+}
+
+.reveal {
+  --rise: 0.5rem;
+  animation: rise 800ms var(--ease-out) var(--delay, 0ms) both;
+}
+
+html:not(.is-ready) .reveal {
+  animation-play-state: paused;
+}
+
+.question {
+  --rise: 0.9rem;
+  --delay: 120ms;
+  animation-duration: 1000ms;
+}
+
+.btn-yes {
+  --delay: 560ms;
+}
+
+.btn-no {
+  --delay: 640ms;
+}
+
+.answer {
+  --rise: 0.25em;
+  animation-duration: 1100ms;
+}
+
+.ask {
+  transition: opacity 420ms ease;
+}
+
+.ask.is-leaving {
+  opacity: 0;
+}
+
+.ask.is-leaving .question {
+  transform: translateY(-0.12em);
+  transition: transform 450ms var(--ease-out);
+}
+
+.ask.is-leaving .btn-yes {
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    --rise: 0px;
+    animation-duration: 500ms;
+  }
+
+  .ask.is-leaving .question,
+  .ask.is-leaving .btn-yes {
+    transform: none;
+  }
+
+  .no-slot {
+    transition: none;
+  }
+}
